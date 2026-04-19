@@ -1,30 +1,31 @@
+import pandas as pd
 import matplotlib.pyplot as plt
-import re
-import glob
 
-def parse_power(file_path):
-    timestamps, cpu, gpu = [], [], []
-    with open(file_path, 'r') as f:
-        data = f.read()
-        # Find all power readings using Regex
-        cpu_vals = re.findall(r"CPU Power: (\d+) mW", data)
-        gpu_vals = re.findall(r"GPU Power: (\d+) mW", data)
+df = pd.read_csv('m2_performance_results.csv')
 
-        # Convert to Watts and plot
-        cpu = [int(x)/1000 for x in cpu_vals]
-        gpu = [int(x)/1000 for x in gpu_vals]
+# Since you have 96k samples, let's smooth the data (Window of 10 samples)
+df['Power_Smooth'] = df['Power_mW'].rolling(window=10).mean()
+df['GPU_Smooth'] = df['GPU_Residency_Pct'].rolling(window=10).mean()
 
-    plt.figure(figsize=(10, 5))
-    plt.plot(cpu, label='CPU Power (W)', color='blue')
-    plt.plot(gpu, label='GPU Power (W)', color='green')
-    plt.title("M2 Unified Bottleneck: Vision vs Text Phase")
-    plt.xlabel("Time (Samples @ 500ms)")
-    plt.ylabel("Power (Watts)")
-    plt.legend()
-    plt.grid(True)
-    plt.savefig(file_path.replace('.txt', '.png'))
-    print(f"Graph saved as {file_path.replace('.txt', '.png')}")
+fig, ax1 = plt.subplots(figsize=(14, 7))
 
-# Run it on your latest log
-latest_log = max(glob.glob("results/logs/*.txt"))
-parse_power(latest_log)
+# Plot Power
+ax1.set_xlabel('Sample Index (Time)')
+ax1.set_ylabel('Combined Power (mW)', color='tab:red')
+ax1.plot(df.index, df['Power_Smooth'], color='tab:red', alpha=0.8, label='SoC Power (Smooth)')
+ax1.tick_params(axis='y', labelcolor='tab:red')
+
+# Second axis for GPU
+ax2 = ax1.twinx()
+ax2.set_ylabel('GPU Residency (%)', color='tab:blue')
+ax2.plot(df.index, df['GPU_Smooth'], color='tab:blue', alpha=0.6, label='GPU Usage')
+ax2.tick_params(axis='y', labelcolor='tab:blue')
+
+# Highlight the Peak
+peak_val = df['Power_mW'].max()
+plt.title(f'M2 Unified Bottleneck Analysis\nPeak SoC Power: {peak_val} mW', fontsize=14)
+fig.tight_layout()
+
+plt.savefig('m2_vlm_analysis_high_res.png', dpi=300)
+print("High-res graph saved!")
+plt.show()
