@@ -1,9 +1,9 @@
 #!/bin/zsh
 
 # 1. Setup Folders
-mkdir -p results/logs
+mkdir -p ../data/raw_logs
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-LOG_FILE="results/logs/m2_trace_$TIMESTAMP.txt"
+LOG_FILE="../data/raw_logs/m2_trace_$TIMESTAMP.txt"
 
 echo "Starting Automated Benchmark: $TIMESTAMP"
 

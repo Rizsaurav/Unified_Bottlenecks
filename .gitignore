@@ -1,8 +1,14 @@
 llama.cpp/models/InternVL2_5-4B-Q4_K_M.gguf
 llama.cpp/models/mmproj-InternVL2_5-4B-f16.gguf
-m2_trace_20260225_132943.txt
-results/logs/m2_trace_20260225_132943.txt
+# Ignore large telemetry logs
+data/raw_logs/*.txt
+m2_trace_*.txt
 
-/results/logs/m2_trace_20260225_132943.txt
-results/logs/m2_trace_20260225_132943.txt
-results/logs/results/logs/
+# Ignore large enriched CSVs
+data/processed_csvs/enriched_*.csv
+*.csv
+!data/processed_csvs/q4_vs_q8_summary.csv
+
+# Python environment
+venv/
+.DS_Store

@@ -48,11 +48,11 @@ def parse_powermetrics(file_path):
 
     return pd.DataFrame(data)
 
-file_path = "results/logs/m2_trace_20260225_132943.txt"
+file_path = "results/logs/m2_video_trace_20260419_001300.txt"
 df = parse_powermetrics(file_path)
 
 if df is not None and not df.empty:
-    df.to_csv('m2_performance_results.csv', index=False)
+    df.to_csv('vid1_m2_performance_results.csv', index=False)
     print(f"--- SUCCESS ---")
     print(f"Extracted {len(df)} samples.")
     print(f"Peak Power: {df['Power_mW'].max()} mW")
